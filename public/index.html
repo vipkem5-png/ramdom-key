@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Random Key Pro</title>
+<style>
+:root{--bg:#0a0e1a;--card:#111827;--line:#1f2a44;--tx:#e8ecf8;--mut:#7f8aa8;--g:#7de0c4;--b:#7aa7f0;--p:#a99bf0;--y:#e0c48a;--r:#e07a7a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif;padding:env(safe-area-inset-top) 0 40px}
+.w{max-width:760px;margin:0 auto;padding:0 18px}
+header{display:flex;align-items:center;gap:12px;padding:20px 0}
+.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#6d63e0,#8a7fe8);display:grid;place-items:center;font-size:22px}
+header h1{margin:0;font-size:17px;letter-spacing:.08em}header small{color:var(--mut);font-size:11px}
+header .sp{flex:1}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:#161d33;color:var(--tx);padding:10px 16px;border-radius:12px}
+button.pri{background:linear-gradient(90deg,var(--g),var(--b));color:#06121a;border:0;font-weight:700}
+button.dng{color:var(--r)}button:disabled{opacity:.4;cursor:default}
+nav{display:flex;gap:24px;border-bottom:1px solid var(--line)}
+nav a{padding:14px 0;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent}nav a.on{color:var(--g);border-color:var(--g)}
+h2{font-size:34px;line-height:1.15;margin:32px 0 10px}h2 span{color:var(--g)}
+p.s{color:var(--mut);margin:0 0 20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;margin-bottom:16px}
+.grid .card{margin:0}.card .l{color:var(--mut);font-size:14px}.card .n{font-size:44px;font-weight:700;margin:6px 0}
+.card h3{margin:0 0 6px;font-size:20px}
+textarea,input{width:100%;background:#0b1020;border:1px solid var(--line);color:var(--tx);border-radius:14px;padding:14px;font:inherit}
+textarea{height:150px;font-family:ui-monospace,monospace;resize:vertical}
+.row{display:flex;gap:10px;margin-top:12px}.row>*{flex:1}.row input{max-width:110px;flex:none}
+.out{background:#0b1020;border:1px solid var(--line);border-radius:14px;padding:14px;min-height:110px;font-family:ui-monospace,monospace;white-space:pre-wrap;word-break:break-all;margin-top:12px}
+.m{color:var(--mut);font-size:13px}.hide{display:none}
+.modal{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:20px}
+.modal .card{width:100%;max-width:380px}.modal input{margin:6px 0}
+.err{color:var(--r);font-size:13px;min-height:18px}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#162238;border:1px solid var(--line);padding:10px 18px;border-radius:99px;opacity:0;transition:.3s}
+#toast.on{opacity:1}
+</style></head><body><div class="w">
+<header><div class="logo">🔑</div><div><h1>RANDOM KEY PRO</h1><small>Your keys. Your control.</small></div><div class="sp"></div>
+<button id="bAuth">Đăng nhập</button></header>
+<nav><a class="on" data-t="inv">Quản lý kho</a><a data-t="his">Lịch sử lấy key</a></nav>
+
+<section id="inv">
+<h2>Lấy key ngẫu nhiên.<br><span>Nhanh chóng & tiện lợi.</span></h2>
+<p class="s">Một nơi cho tất cả key của bạn. Nạp key, lấy ngẫu nhiên và quản lý dễ dàng — không trùng lặp, không bỏ sót.</p>
+<div class="grid">
+<div class="card"><div class="l">Key còn lại</div><div class="n" id="sR" style="color:var(--g)">0</div><div class="m">Sẵn sàng để sử dụng</div></div>
+<div class="card"><div class="l">Tổng key đã nạp</div><div class="n" id="sT" style="color:var(--b)">0</div><div class="m">Tất cả key trong tài khoản</div></div>
+<div class="card"><div class="l">Key đã lấy</div><div class="n" id="sU" style="color:var(--p)">0</div><div class="m">Được lưu trong lịch sử</div></div>
+<div class="card"><div class="l">Lượt lấy key</div><div class="n" id="sB" style="color:var(--y)">0</div><div class="m">Mỗi lượt, một kết quả mới</div></div>
+</div>
+
+<div class="card"><h3>Nạp key vào kho</h3><p class="m">Mỗi dòng một key. Dòng trống và key trùng tự động được bỏ qua.</p>
+<textarea id="txt" placeholder="KEY-XXXX-XXXX&#10;KEY-YYYY-YYYY"></textarea>
+<div class="row"><button class="pri" id="bAdd">+ Thêm vào kho</button><button id="bFile">Nhập từ file .txt</button><button id="bClr">Xóa nội dung</button></div>
+<input type="file" id="file" accept=".txt" class="hide"></div>
+
+<div class="card"><h3>Lấy key ngẫu nhiên</h3><p class="m">Key đã lấy được tách khỏi kho và lưu vào lịch sử.</p>
+<div class="row"><input id="cnt" type="number" min="1" value="1"><button class="pri" id="bPick">Lấy key ngay</button></div>
+<div class="out" id="out"><span class="m">Chọn số lượng và nhấn “Lấy key ngay”</span></div>
+<div class="row"><button id="bCopy">Sao chép</button><button id="bDl">Tải kết quả</button></div></div>
+
+<div class="card"><h3>Kho key còn lại</h3>
+<div class="row"><input id="q" style="max-width:none;flex:2" placeholder="Tìm kiếm key trong kho..."><button id="bCopyAll">Sao chép</button></div>
+<div class="out" id="inv-list"></div>
+<div class="row"><button id="bDlAll">Tải kho key (.txt)</button><button class="dng" id="bDel">Xóa toàn bộ kho</button></div></div>
+</section>
+
+<section id="his" class="hide"><h2>Lịch sử lấy key</h2><div class="card"><div class="out" id="his-list"></div></div></section>
+</div>
+
+<div class="modal hide" id="modal"><div class="card"><h3 id="mT">Đăng nhập</h3>
+<input id="u" placeholder="Tên đăng nhập" autocomplete="username"><input id="p" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+<div class="err" id="err"></div>
+<div class="row"><button class="pri" id="mGo">Đăng nhập</button><button id="mSw">Đăng ký</button></div>
+<div class="row"><button id="mX">Đóng</button></div></div></div>
+<div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);let tok=localStorage.tok||'',mode='login',S={remaining:[],history:[]},last=[];
+const toast=t=>{$('toast').textContent=t;$('toast').classList.add('on');setTimeout(()=>$('toast').classList.remove('on'),1800)};
+async function api(url,method='GET',body){
+  const r=await fetch(url,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:body&&JSON.stringify(body)});
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401&&tok){tok='';localStorage.tok='';render();}
+  if(!r.ok)throw new Error(d.error||'Lỗi');return d}
+function render(){
+  $('bAuth').textContent=tok?'Đăng xuất':'Đăng nhập';
+  const R=S.remaining,f=$('q').value.toLowerCase();
+  $('sR').textContent=R.length;$('sT').textContent=S.total||0;$('sU').textContent=S.history.length;$('sB').textContent=S.batches||0;
+  $('inv-list').textContent=R.filter(k=>k.toLowerCase().includes(f)).join('\n')||'Kho key đang trống';
+  $('his-list').textContent=S.history.map(h=>new Date(h.picked_at).toLocaleString('vi-VN')+'  '+h.value).join('\n')||'Chưa có lịch sử';
+}
+async function load(){if(!tok){S={remaining:[],history:[]};return render()}try{S=await api('/api/state')}catch{}render()}
+const need=()=>{if(!tok){$('modal').classList.remove('hide');return false}return true};
+document.querySelectorAll('nav a').forEach(a=>a.onclick=()=>{document.querySelectorAll('nav a').forEach(x=>x.classList.toggle('on',x===a));$('inv').classList.toggle('hide',a.dataset.t!=='inv');$('his').classList.toggle('hide',a.dataset.t!=='his')});
+$('bAuth').onclick=()=>{if(tok){tok='';localStorage.tok='';load()}else $('modal').classList.remove('hide')};
+$('mX').onclick=()=>$('modal').classList.add('hide');
+$('mSw').onclick=()=>{mode=mode==='login'?'reg':'login';const l=mode==='login';$('mT').textContent=l?'Đăng nhập':'Đăng ký';$('mGo').textContent=l?'Đăng nhập':'Đăng ký';$('mSw').textContent=l?'Đăng ký':'Đăng nhập'};
+$('mGo').onclick=async()=>{try{const d=await api(mode==='login'?'/api/login':'/api/register','POST',{username:$('u').value,password:$('p').value});tok=d.token;localStorage.tok=tok;$('modal').classList.add('hide');$('err').textContent='';load()}catch(e){$('err').textContent=e.message}};
+$('bAdd').onclick=async()=>{if(!need())return;try{const d=await api('/api/keys','POST',{text:$('txt').value});toast(`Đã thêm ${d.added}, bỏ qua ${d.skipped}`);$('txt').value='';load()}catch(e){toast(e.message)}};
+$('bClr').onclick=()=>$('txt').value='';
+$('bFile').onclick=()=>$('file').click();
+$('file').onchange=async e=>{$('txt').value=await e.target.files[0].text()};
+$('bPick').onclick=async()=>{if(!need())return;try{const d=await api('/api/pick','POST',{count:$('cnt').value});last=d.keys;$('out').textContent=last.join('\n');load()}catch(e){toast(e.message)}};
+const copy=t=>navigator.clipboard.writeText(t).then(()=>toast('Đã sao chép'));
+const dl=(t,n)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t]));a.download=n;a.click()};
+$('bCopy').onclick=()=>last.length&&copy(last.join('\n'));
+$('bDl').onclick=()=>last.length&&dl(last.join('\n'),'keys.txt');
+$('bCopyAll').onclick=()=>S.remaining.length&&copy(S.remaining.join('\n'));
+$('bDlAll').onclick=()=>S.remaining.length&&dl(S.remaining.join('\n'),'kho-key.txt');
+$('bDel').onclick=async()=>{if(need()&&confirm('Xóa toàn bộ key còn lại trong kho?')){await api('/api/keys','DELETE');load()}};
+$('q').oninput=render;load();
+</script></body></html>
